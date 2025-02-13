@@ -1,4 +1,4 @@
-name: Build and Deploy Spring Boot Application
+name: Build and Deploy Spring Boot
 
 on:
   push:
@@ -35,7 +35,9 @@ jobs:
           context: javapack
           file: javapack/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/springboot-app:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
+            ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.sha }}
 
       - name: Logout from Docker Hub
         run: docker logout
