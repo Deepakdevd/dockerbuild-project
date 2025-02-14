@@ -11,7 +11,7 @@ jobs:
 
     env:
       RESOURCE_GROUP_NAME: deepak-rg
-      AKS_CLUSTER_NAME: az-deep34aks
+      AKS_CLUSTER_NAME: azure-aks-deep34
 
     steps:
       - name: Checkout repository
