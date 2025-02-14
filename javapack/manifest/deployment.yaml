@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: example:latest
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "2"
+        ports:
+        - containerPort: 8080
