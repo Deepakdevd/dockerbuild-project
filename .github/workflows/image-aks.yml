@@ -12,9 +12,8 @@ jobs:
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      RESOURCE_GROUP_NAME: kml_rg_main-6aee6bcff6c54180
-      AKS_CLUSTER_NAME: aks-deep14245
+      RESOURCE_GROUP_NAME: deepak-rg
+      AKS_CLUSTER_NAME: az-deep34aks
 
     steps:
       - name: Checkout repository
@@ -50,8 +49,9 @@ jobs:
         run: docker logout
 
       - name: Set up Azure CLI
-        run: |
-          az login --tenant ${{ env.AZURE_TENANT_ID }} --use-device-code
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get AKS credentials
         run: |
