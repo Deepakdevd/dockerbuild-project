@@ -57,6 +57,6 @@ jobs:
 
       - name: Update Kubernetes deployment
         run: |
-          sed -i "s|image: .*|image: ${{ env.DOCKER_USERNAME }}/springboot-app:${{ github.sha }}|g" manifest/deployment.yaml
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.sha }}|g" manifest/deployment.yaml
           kubectl apply -f manifest/deployment.yaml
           kubectl apply -f manifest/service.yaml
