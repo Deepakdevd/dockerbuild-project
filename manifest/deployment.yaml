@@ -14,9 +14,5 @@ spec:
       containers:
       - name: myapp
         image: example:latest
-        resources:
-          limits:
-            memory: "2Gi"
-            cpu: "2"
         ports:
         - containerPort: 8080
