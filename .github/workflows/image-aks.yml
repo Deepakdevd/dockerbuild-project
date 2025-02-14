@@ -1,0 +1,64 @@
+name: Build, Deploy, and Update Kubernetes on AKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      RESOURCE_GROUP_NAME: kml_rg_main-6aee6bcff6c54180
+      AKS_CLUSTER_NAME: aks-deep14245
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Build with Maven
+        run: mvn clean install
+        working-directory: javapack
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: javapack
+          file: javapack/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
+            ${{ env.DOCKER_USERNAME }}/springboot-app:${{ github.sha }}
+
+      - name: Logout from Docker Hub
+        run: docker logout
+
+      - name: Set up Azure CLI
+        run: |
+          az login --tenant ${{ env.AZURE_TENANT_ID }} --use-device-code
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $AKS_CLUSTER_NAME --overwrite-existing
+
+      - name: Update Kubernetes deployment
+        run: |
+          sed -i "s|image: .*|image: ${{ env.DOCKER_USERNAME }}/springboot-app:${{ github.sha }}|g" manifest/deployment.yaml
+          kubectl apply -f manifest/deployment.yaml
+          kubectl apply -f manifest/service.yaml
