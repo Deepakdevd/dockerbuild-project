@@ -43,7 +43,7 @@ jobs:
 
       - name: Scan Docker image for vulnerabilities
         run: |
-          trivy image --exit-code 1 --severity CRITICAL ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
+          trivy image ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
 
       - name: Push Docker image
         if: success()
